@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Python Buddy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Animation keyframes */
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Animated elements */
+        .page-title {
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .settings-card {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .difficulty-content {
+            transition: all 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(10px);
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .difficulty-content.show {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 300px;
+            margin-top: 1rem;
+        }
+
+        /* Hover effects */
+        .nav-link {
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .save-button {
+            transition: all 0.3s ease;
+        }
+
+        .save-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        select {
+            transition: all 0.2s ease;
+        }
+
+        select:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-item {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .list-item.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-white text-2xl font-bold page-title">Python Buddy</h1>
+            <a href="/" class="text-white hover:text-blue-200 nav-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 settings-card">
+            <h2 class="text-2xl font-bold mb-6 page-title">Settings</h2>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-2">API Configuration</h3>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="api-key">
+                        OpenAI API Key
+                    </label>
+                    <input type="password" id="api-key" 
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="Enter your OpenAI API key">
+                    <p class="text-sm text-gray-600 mt-1">
+                        Your API key is stored locally in your browser and is never sent to our servers.
+                    </p>
+                </div>
+                <button onclick="saveSettings()" 
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors save-button">
+                    Save Settings
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-2">Tutor Preferences</h3>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="difficulty-level">
+                        Learning Level
+                    </label>
+                    <select id="difficulty-level" onchange="updateDifficultyContent()"
+                        class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <!-- Difficulty Level Content Sections -->
+                <div id="beginner-content" class="difficulty-content">
+                    <h4 class="text-md font-semibold mb-2">Beginner Level Content</h4>
+                    <ul class="list-disc pl-5">
+                        <li class="list-item">Basic Python syntax and data types</li>
+                        <li class="list-item">Variables and operators</li>
+                        <li class="list-item">Control structures (if, loops)</li>
+                        <li class="list-item">Functions and basic input/output</li>
+                    </ul>
+                </div>
+
+                <div id="intermediate-content" class="difficulty-content">
+                    <h4 class="text-md font-semibold mb-2">Intermediate Level Content</h4>
+                    <ul class="list-disc pl-5">
+                        <li class="list-item">Object-oriented programming</li>
+                        <li class="list-item">Error handling and exceptions</li>
+                        <li class="list-item">File handling and modules</li>
+                        <li class="list-item">List comprehensions and generators</li>
+                    </ul>
+                </div>
+
+                <div id="advanced-content" class="difficulty-content">
+                    <h4 class="text-md font-semibold mb-2">Advanced Level Content</h4>
+                    <ul class="list-disc pl-5">
+                        <li class="list-item">Decorators and metaclasses</li>
+                        <li class="list-item">Error handling and exceptions</li>
+                        <li class="list-item">Advanced design patterns</li>
+                        <li class="list-item">Performance optimization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load saved settings when page loads
+        window.addEventListener('load', () => {
+            const apiKey = localStorage.getItem('openai_api_key');
+            const difficultyLevel = localStorage.getItem('difficulty_level') || 'beginner';
+            
+            if (apiKey) {
+                document.getElementById('api-key').value = apiKey;
+            }
+            document.getElementById('difficulty-level').value = difficultyLevel;
+            updateDifficultyContent();
+        });
+
+        function saveSettings() {
+            const apiKey = document.getElementById('api-key').value;
+            const difficultyLevel = document.getElementById('difficulty-level').value;
+            
+            localStorage.setItem('openai_api_key', apiKey);
+            localStorage.setItem('difficulty_level', difficultyLevel);
+            
+            alert('Settings saved successfully!');
+            // Redirect to home page after saving
+            window.location.href = '/';
+        }
+
+        function updateDifficultyContent() {
+            const difficultyLevel = document.getElementById('difficulty-level').value;
+            const contentDivs = document.querySelectorAll('.difficulty-content');
+            
+            // Hide all content sections
+            contentDivs.forEach(div => {
+                div.classList.remove('show');
+                // Reset list item animations
+                div.querySelectorAll('.list-item').forEach(item => {
+                    item.classList.remove('show');
+                });
+            });
+            
+            // Show selected difficulty content with animation
+            const selectedContent = document.getElementById(`${difficultyLevel}-content`);
+            selectedContent.classList.add('show');
+
+            // Animate list items with delay
+            selectedContent.querySelectorAll('.list-item').forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.add('show');
+                }, index * 100); // 100ms delay between each item
+            });
+        }
+    </script>
+</body>
+</html>

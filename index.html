@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Buddy - Your new AI Python Tutor</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .chat-container {
+            height: calc(100vh - 300px);
+        }
+        
+        /* Message animations and styling */
+        .message {
+            max-width: 80%;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: messageSlideIn 0.5s ease forwards;
+        }
+
+        @keyframes messageSlideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            background-color: #cce815;
+            margin-left: auto;
+            transform-origin: right bottom;
+        }
+
+        .bot-message {
+            background-color: #0378e5;
+            margin-right: auto;
+            transform-origin: left bottom;
+        }
+
+        /* Welcome section animations */
+        .welcome-title {
+            animation: slideFromLeft 0.8s ease-out;
+        }
+
+        .welcome-text {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+            animation-delay: 0.3s;
+        }
+
+        .feature-list li {
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideInFeature 0.5s ease-out forwards;
+        }
+
+        /* Stagger feature list animations */
+        .feature-list li:nth-child(1) { animation-delay: 0.3s; }
+        .feature-list li:nth-child(2) { animation-delay: 0.7s; }
+        .feature-list li:nth-child(3) { animation-delay: 0.6s; }
+        .feature-list li:nth-child(4) { animation-delay: 1.5s; }
+
+        /* Input section animations */
+        .input-container {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.5s ease-out forwards;
+            animation-delay: 1.2s;
+        }
+
+        /* Typing indicator animation */
+        .typing-indicator {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .typing-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: rgb(17, 158, 198);
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: blink 1s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.6s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.8s; }
+
+        /* Button hover animation */
+        .send-button {
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Input focus animation */
+        .chat-input {
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Navigation animations */
+        .nav-title {
+            animation: slideFromLeft 0.6s ease-out;
+        }
+
+        .nav-settings {
+            animation: slideFromRight 0.6s ease-out;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-settings:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Keyframe animations */
+        @keyframes slideFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInFeature {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+        }
+
+        /* Code block animation */
+        .code-block {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideUp 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-white text-2xl font-bold nav-title">Python Tutor👌</h1>
+            <a href="/settings" class="text-white hover:text-blue-200 nav-settings">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 welcome-title">Welcome to Python Buddy! </h2>
+            <p class="mb-4 welcome-text">
+                Python Buddy is your friendly AI-powered Python tutor designed specifically for young learners. 
+                Whether you're just starting out or working on your coding projects, I'm here to help you understand 
+                Python programming in a fun and interactive way!
+            </p>
+            <p class="mb-4 welcome-text">
+                Features:
+                <ul class="list-disc ml-6 feature-list">
+                    <li>Interactive chat-based learning</li>
+                    <li>Child-friendly explanations with examples</li>
+                    <li>Practice exercises and homework help</li>
+                    <li>Customizable learning experience</li>
+                </ul>
+            </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div id="chat-container" class="chat-container overflow-y-auto mb-4">
+                <div class="bot-message message">
+                    Hi! I'm Python Buddy, your AI Python tutor. What would you like to learn today? 
+                    We can start with basics like variables and data types, or you can ask me any Python question! 😊
+                </div>
+            </div>
+            
+            <div class="typing-indicator message bot-message">
+                <span></span><span></span><span></span>
+            </div>
+
+            <div class="flex gap-2 input-container">
+                <input type="text" id="user-input" 
+                    class="flex-1 p-2 border rounded-lg focus:outline-none focus:border-blue-500 chat-input" 
+                    placeholder="Type your Python question here...">
+                <button onclick="sendMessage()" 
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors send-button">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const typingIndicator = document.querySelector('.typing-indicator');
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const message = userInput.value.trim().toLowerCase();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            userInput.value = '';
+            showTypingIndicator();
+
+            setTimeout(() => {
+                hideTypingIndicator();
+                addMessage(getPythonResponse(message), 'bot');
+            }, 1000);
+        }
+
+        function getPythonResponse(message) {
+            if (message.includes('variable')) {
+                return "Variables in Python are used to store data values, acting as named references to objects in memory. They are created when a value is assigned using the `=` operator, and their type is determined dynamically.. Example:\n\n```python\nx = 10\ny = 'Hello'\nprint(x, y)\n```";
+            } else if (message.includes('data type')) {
+                return "Data types in Python define the kind of value a variable can hold, such as integers (`int`), floating-point numbers (`float`), strings (`str`), and more. Python has built-in types like `list`, `tuple`, `dict`, `set`, and `bool` to handle different kinds of data efficiently., such as:1)Primitive data types:\n- int (10)\n- float (10.5)\n- str ('Hello')\n- 2)Non-primitive data types:\n- list ([1, 2, 3])\n- dict ({'name': 'Alice', 'age': 25})\n\nTry using them in a Python program!";
+            } else if (message.includes('loop')) {
+                return "Loops in Python are control structures that allow repeated execution of a block of code. The two main types are **for** loops (iterating over sequences) and **while** loops (executing while a condition is true).. Example:\n\n```python\nfor i in range(5):\n     print(i)\n```";
+            } else if (message.includes('array') || message.includes('list')) {
+                return "Python lists work like arrays. Example:\n\n```python\n my_list = [1, 2, 3, 4]\nprint(my_list[0])\n```";
+            } else if (message.includes('collection')) {
+                return "Python collections include lists, sets, tuples, and dictionaries:\n\n```python\nmy_dict = {'name': 'Alice', 'age': 25}\nprint(my_dict['name'])\n```";
+            } else {
+                return "I can help with Python! Ask about variables, data types, loops, arrays, collections, or any other topic! 😊";
+            }
+        }
+
+        function addMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            // Add code block animation if message contains code
+            if (message.includes('```python')) {
+                message = message.replace(/```python([\s\S]*?)```/g, 
+                    '<pre class="code-block bg-gray-800 text-white p-3 rounded mt-2 mb-2"><code>$1</code></pre>');
+            }
+            
+            messageDiv.innerHTML = message.replace(/\n/g, '<br>');
+            chatContainer.appendChild(messageDiv);
+            
+            // Ensure animation plays
+            void messageDiv.offsetWidth;
+            messageDiv.style.animation = 'messageSlideIn 0.5s ease forwards';
+            
+            // Scroll to bottom with smooth animation
+            chatContainer.scrollTo({
+                top: chatContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        // Show typing indicator with animation
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'block';
+            typingIndicator.classList.add('show');
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.classList.remove('show');
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+            }, 300);
+        }
+    </script>
+</body>
+</html>
